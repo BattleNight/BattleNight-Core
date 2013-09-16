@@ -40,5 +40,4 @@ public class AnnounceCommand extends BattleNightCommand {
         messenger.tellBattle(ChatColor.translateAlternateColorCodes('&', createString(args, 0)));
         return true;
     }
-
 }

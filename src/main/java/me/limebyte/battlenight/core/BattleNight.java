@@ -36,87 +36,87 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class BattleNight extends JavaPlugin implements BattleNightPlugin {
 
-    public static BattleNight instance;
-    private BattleNightAPI api;
+	public static BattleNight instance;
+	private BattleNightAPI api;
 
-    @Override
-    public BattleNightAPI getAPI() {
-        return api;
-    }
+	@Override
+	public BattleNightAPI getAPI() {
+		return api;
+	}
 
-    @Override
-    public void onDisable() {
-        Battle battle = getAPI().getBattle();
-        Lobby lobby = getAPI().getLobby();
+	@Override
+	public void onDisable() {
+		Battle battle = getAPI().getBattle();
+		Lobby lobby = getAPI().getLobby();
 
-        api.getArenaManager().saveArenas();
+		api.getArenaManager().saveArenas();
 
-        if (battle != null) {
-            battle.stop();
-        }
-        for (String name : new ArrayList<String>(lobby.getPlayers())) {
-            Player player = Bukkit.getPlayerExact(name);
-            if (player != null) {
-                lobby.removePlayer(player);
-            }
-        }
+		if (battle != null) {
+			battle.stop();
+		}
+		for (String name : new ArrayList<String>(lobby.getPlayers())) {
+			Player player = Bukkit.getPlayerExact(name);
+			if (player != null) {
+				lobby.removePlayer(player);
+			}
+		}
 
-        getServer().getScheduler().cancelTasks(this);
+		getServer().getScheduler().cancelTasks(this);
 
-        PluginDescriptionFile pdfFile = getDescription();
-        api.getMessenger().log(Level.INFO, "Version " + pdfFile.getVersion() + " has been disabled.");
-    }
+		PluginDescriptionFile pdfFile = getDescription();
+		api.getMessenger().log(Level.INFO, "Version " + pdfFile.getVersion() + " has been disabled.");
+	}
 
-    @Override
-    public void onEnable() {
-        instance = this;
+	@Override
+	public void onEnable() {
+		instance = this;
 
-        ConfigurationSerialization.registerClass(SimpleArena.class);
-        ConfigurationSerialization.registerClass(SimpleWaypoint.class);
-        ConfigManager.initConfigurations();
+		ConfigurationSerialization.registerClass(SimpleArena.class);
+		ConfigurationSerialization.registerClass(SimpleWaypoint.class);
+		ConfigManager.initConfigurations();
 
-        api = new API(this);
+		api = new API(this);
 
-        Messenger messenger = api.getMessenger();
-        PluginManager pm = getServer().getPluginManager();
-        PluginDescriptionFile pdf = getDescription();
+		Messenger messenger = api.getMessenger();
+		PluginManager pm = getServer().getPluginManager();
+		PluginDescriptionFile pdf = getDescription();
 
-        // Debugging
-        if (ConfigManager.get(Config.MAIN).getBoolean("UsePermissions", false)) {
-            messenger.debug(Level.INFO, "Permissions Enabled.");
-        } else {
-            messenger.debug(Level.INFO, "Permissions Disabled, using Op.");
-        }
+		// Debugging
+		if (ConfigManager.get(Config.MAIN).getBoolean("UsePermissions", false)) {
+			messenger.debug(Level.INFO, "Permissions Enabled.");
+		} else {
+			messenger.debug(Level.INFO, "Permissions Disabled, using Op.");
+		}
 
-        // Commands
-        PluginCommand command = getCommand("battlenight");
-        CommandManager manager = new CommandManager(api);
-        command.setExecutor(manager);
-        command.setTabCompleter(new BattleNightTabCompleter());
+		// Commands
+		PluginCommand command = getCommand("battlenight");
+		CommandManager manager = new CommandManager(api);
+		command.setExecutor(manager);
+		command.setTabCompleter(new BattleNightTabCompleter());
 
-        // Hooks
-        try {
-            Metrics metrics = new Metrics(this);
-            metrics.start();
-        } catch (IOException e) {
-        }
+		// Hooks
+		try {
+			Metrics metrics = new Metrics(this);
+			metrics.start();
+		} catch (IOException e) {
+		}
 
-        // Event Registration
-        pm.registerEvents(new BlockListener(api), this);
-        pm.registerEvents(new CheatListener(api), this);
-        pm.registerEvents(new HealthListener(api), this);
-        pm.registerEvents(new DeathListener(api), this);
-        pm.registerEvents(new ConnectionListener(api), this);
-        pm.registerEvents(new InteractListener(api), this);
-        pm.registerEvents(new Teleporter(), this);
-        pm.registerEvents(new SignListener(api), this);
+		// Event Registration
+		pm.registerEvents(new BlockListener(api), this);
+		pm.registerEvents(new CheatListener(api), this);
+		pm.registerEvents(new HealthListener(api), this);
+		pm.registerEvents(new DeathListener(api), this);
+		pm.registerEvents(new ConnectionListener(api), this);
+		pm.registerEvents(new InteractListener(api), this);
+		pm.registerEvents(new Teleporter(), this);
+		pm.registerEvents(new SignListener(api), this);
 
-        if (ConfigManager.get(Config.MAIN).getBoolean("UpdateCheck", true)) {
-            UpdateChecker.check(api, pdf);
-        }
+		if (ConfigManager.get(Config.MAIN).getBoolean("UpdateCheck", true)) {
+			UpdateChecker.check(api, pdf);
+		}
 
-        // Enable Message
-        messenger.log(Level.INFO, "Version " + pdf.getVersion() + " enabled successfully.");
-        messenger.log(Level.INFO, "Made by LimeByte.");
-    }
+		// Enable Message
+		messenger.log(Level.INFO, "Version " + pdf.getVersion() + " enabled successfully.");
+		messenger.log(Level.INFO, "Made by LimeByte.");
+	}
 }

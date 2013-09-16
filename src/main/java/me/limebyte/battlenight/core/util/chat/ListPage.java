@@ -13,5 +13,4 @@ public class ListPage extends StandardPage {
         }
         this.text = text.substring(0, text.length() - 1);
     }
-
 }
