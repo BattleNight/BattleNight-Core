@@ -14,152 +14,152 @@ import org.bukkit.configuration.serialization.SerializableAs;
 @SerializableAs("Arena")
 public class SimpleArena implements Arena {
 
-    private String name;
+	private String name;
 
-    private String displayName;
-    private ArrayList<Waypoint> spawnPoints = new ArrayList<Waypoint>();
-    private boolean enabled = true;
-    private String texturePack = "";
-    private final Random RANDOM = new Random();
-    private int votes;
+	private String displayName;
+	private ArrayList<Waypoint> spawnPoints = new ArrayList<Waypoint>();
+	private boolean enabled = true;
+	private String texturePack = "";
+	private final Random RANDOM = new Random();
+	private int votes;
 
-    public SimpleArena(String name) {
-        this.name = name.toLowerCase();
-        displayName = name;
-        votes = 0;
-    }
+	public SimpleArena(String name) {
+		this.name = name.toLowerCase();
+		displayName = name;
+		votes = 0;
+	}
 
-    @SuppressWarnings("unchecked")
-    public static SimpleArena deserialize(Map<String, Object> map) {
-        Object displayName = map.get("DisplayName");
-        Object spawnPoints = map.get("SpawnPoints");
-        Object enabled = map.get("Enabled");
-        Object texturePack = map.get("TexturePack");
+	@SuppressWarnings("unchecked")
+	public static SimpleArena deserialize(Map<String, Object> map) {
+		Object displayName = map.get("DisplayName");
+		Object spawnPoints = map.get("SpawnPoints");
+		Object enabled = map.get("Enabled");
+		Object texturePack = map.get("TexturePack");
 
-        SimpleArena arena = new SimpleArena((String) map.get("Name"));
-        if (displayName != null) {
-            arena.displayName = (String) displayName;
-        }
-        if (spawnPoints != null) {
-            arena.spawnPoints = (ArrayList<Waypoint>) spawnPoints;
-        }
-        if (enabled != null) {
-            arena.enabled = (Boolean) enabled;
-        }
-        if (texturePack != null) {
-            arena.texturePack = (String) texturePack;
-        }
+		SimpleArena arena = new SimpleArena((String) map.get("Name"));
+		if (displayName != null) {
+			arena.displayName = (String) displayName;
+		}
+		if (spawnPoints != null) {
+			arena.spawnPoints = (ArrayList<Waypoint>) spawnPoints;
+		}
+		if (enabled != null) {
+			arena.enabled = (Boolean) enabled;
+		}
+		if (texturePack != null) {
+			arena.texturePack = (String) texturePack;
+		}
 
-        return arena;
-    }
+		return arena;
+	}
 
-    @Override
-    public int addSpawnPoint(Waypoint waypoint) {
-        spawnPoints.add(waypoint);
-        return spawnPoints.size() - 1;
-    }
+	@Override
+	public int addSpawnPoint(Waypoint waypoint) {
+		spawnPoints.add(waypoint);
+		return spawnPoints.size() - 1;
+	}
 
-    @Override
-    public void addVote() {
-        votes++;
-        BattleNight.instance.getAPI().getScoreManager().updateVotes();
-    }
+	@Override
+	public void addVote() {
+		votes++;
+		BattleNight.instance.getAPI().getScoreManager().updateVotes();
+	}
 
-    @Override
-    public void disable() {
-        setEnabled(false);
-    }
+	@Override
+	public void disable() {
+		setEnabled(false);
+	}
 
-    @Override
-    public void enable() {
-        setEnabled(true);
-    }
+	@Override
+	public void enable() {
+		setEnabled(true);
+	}
 
-    @Override
-    public String getDisplayName() {
-        return displayName;
-    }
+	@Override
+	public String getDisplayName() {
+		return displayName;
+	}
 
-    @Override
-    public String getName() {
-        return name;
-    }
+	@Override
+	public String getName() {
+		return name;
+	}
 
-    @Override
-    public Waypoint getRandomSpawnPoint() {
-        return getSpawnPoints().get(RANDOM.nextInt(getSpawnPoints().size()));
-    }
+	@Override
+	public Waypoint getRandomSpawnPoint() {
+		return getSpawnPoints().get(RANDOM.nextInt(getSpawnPoints().size()));
+	}
 
-    @Override
-    public ArrayList<Waypoint> getSpawnPoints() {
-        return spawnPoints;
-    }
+	@Override
+	public ArrayList<Waypoint> getSpawnPoints() {
+		return spawnPoints;
+	}
 
-    @Override
-    public String getTexturePack() {
-        return texturePack;
-    }
+	@Override
+	public String getTexturePack() {
+		return texturePack;
+	}
 
-    @Override
-    public int getVotes() {
-        return votes;
-    }
+	@Override
+	public int getVotes() {
+		return votes;
+	}
 
-    @Override
-    public boolean isEnabled() {
-        return enabled;
-    }
+	@Override
+	public boolean isEnabled() {
+		return enabled;
+	}
 
-    @Override
-    public boolean isSetup(int minSpawnPoints) {
-        return spawnPoints.size() >= minSpawnPoints;
-    }
+	@Override
+	public boolean isSetup(int minSpawnPoints) {
+		return spawnPoints.size() >= minSpawnPoints;
+	}
 
-    @Override
-    public void removeSpawnPoint(Waypoint waypoint) {
-        spawnPoints.remove(waypoint);
-    }
+	@Override
+	public void removeSpawnPoint(Waypoint waypoint) {
+		spawnPoints.remove(waypoint);
+	}
 
-    @Override
-    public void removeVote() {
-        votes--;
-        BattleNight.instance.getAPI().getScoreManager().updateVotes();
-    }
+	@Override
+	public void removeVote() {
+		votes--;
+		BattleNight.instance.getAPI().getScoreManager().updateVotes();
+	}
 
-    @Override
-    public Map<String, Object> serialize() {
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("Name", name);
-        map.put("DisplayName", displayName);
-        map.put("SpawnPoints", spawnPoints);
-        map.put("Enabled", enabled);
-        map.put("TexturePack", texturePack);
-        return map;
-    }
+	@Override
+	public Map<String, Object> serialize() {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("Name", name);
+		map.put("DisplayName", displayName);
+		map.put("SpawnPoints", spawnPoints);
+		map.put("Enabled", enabled);
+		map.put("TexturePack", texturePack);
+		return map;
+	}
 
-    @Override
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
+	@Override
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
 
-    @Override
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
+	@Override
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
 
-    @Override
-    public void setTexturePack(String texturePack) {
-        this.texturePack = texturePack;
-    }
+	@Override
+	public void setTexturePack(String texturePack) {
+		this.texturePack = texturePack;
+	}
 
-    @Override
-    public void setVotes(int votes) {
-        this.votes = votes;
-        BattleNight.instance.getAPI().getScoreManager().updateVotes();
-    }
+	@Override
+	public void setVotes(int votes) {
+		this.votes = votes;
+		BattleNight.instance.getAPI().getScoreManager().updateVotes();
+	}
 
-    @Override
-    public String toString() {
-        return name;
-    }
+	@Override
+	public String toString() {
+		return name;
+	}
 }

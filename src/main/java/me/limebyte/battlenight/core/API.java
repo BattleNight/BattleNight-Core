@@ -24,92 +24,92 @@ import org.bukkit.entity.Player;
 
 public class API implements BattleNightAPI {
 
-    private Messenger messenger;
+	private Messenger messenger;
 
-    // Managers
-    private ArenaManager arenaManager;
-    private ClassManager classManager;
-    private MusicManager musicManager;
-    private ScoreManager scoreManager;
+	// Managers
+	private ArenaManager arenaManager;
+	private ClassManager classManager;
+	private MusicManager musicManager;
+	private ScoreManager scoreManager;
 
-    private Lobby lobby;
-    private Battle battle;
+	private Lobby lobby;
+	private Battle battle;
 
-    public API(BattleNight plugin) {
-        messenger = new SimpleMessenger(this);
+	public API(BattleNight plugin) {
+		messenger = new SimpleMessenger(this);
 
-        // Managers
-        arenaManager = new CoreArenaManager(this);
-        classManager = new CoreClassManager(this);
-        musicManager = new CoreMusicManager(this, plugin);
-        scoreManager = new CoreScoreManager(this);
+		// Managers
+		arenaManager = new CoreArenaManager(this);
+		classManager = new CoreClassManager(this);
+		musicManager = new CoreMusicManager(this, plugin);
+		scoreManager = new CoreScoreManager(this);
 
-        lobby = new SimpleLobby(this);
+		lobby = new SimpleLobby(this);
 
-        PlayerData.api = this;
-    }
+		PlayerData.api = this;
+	}
 
-    @Override
-    public ArenaManager getArenaManager() {
-        return arenaManager;
-    }
+	@Override
+	public ArenaManager getArenaManager() {
+		return arenaManager;
+	}
 
-    @Override
-    public Battle getBattle() {
-        return battle;
-    }
+	@Override
+	public Battle getBattle() {
+		return battle;
+	}
 
-    @Override
-    public ClassManager getClassManager() {
-        return classManager;
-    }
+	@Override
+	public ClassManager getClassManager() {
+		return classManager;
+	}
 
-    @Override
-    public Lobby getLobby() {
-        return lobby;
-    }
+	@Override
+	public Lobby getLobby() {
+		return lobby;
+	}
 
-    @Override
-    public Messenger getMessenger() {
-        return messenger;
-    }
+	@Override
+	public Messenger getMessenger() {
+		return messenger;
+	}
 
-    @Override
-    public MusicManager getMusicManager() {
-        return musicManager;
-    }
+	@Override
+	public MusicManager getMusicManager() {
+		return musicManager;
+	}
 
-    @Override
-    public PlayerClass getPlayerClass(Player player) {
-        return Metadata.getPlayerClass(player);
-    }
+	@Override
+	public PlayerClass getPlayerClass(Player player) {
+		return Metadata.getPlayerClass(player);
+	}
 
-    @Override
-    public ScoreManager getScoreManager() {
-        return scoreManager;
-    }
+	@Override
+	public ScoreManager getScoreManager() {
+		return scoreManager;
+	}
 
-    public void registerCommand(BattleNightCommand command) {
-        CommandManager.registerCommand(command);
+	public void registerCommand(BattleNightCommand command) {
+		CommandManager.registerCommand(command);
 
-    }
+	}
 
-    @Override
-    public void setBattle(Battle battle) {
-        this.battle = battle;
-    }
+	@Override
+	public void setBattle(Battle battle) {
+		this.battle = battle;
+	}
 
-    @Override
-    public void setPlayerClass(Player player, PlayerClass playerClass) {
-        if (playerClass != null) {
-            Metadata.set(player, "class", playerClass.getName());
-            playerClass.equip(player);
-        } else {
-            Metadata.remove(player, "class");
-        }
-    }
+	@Override
+	public void setPlayerClass(Player player, PlayerClass playerClass) {
+		if (playerClass != null) {
+			Metadata.set(player, "class", playerClass.getName());
+			playerClass.equip(player);
+		} else {
+			Metadata.remove(player, "class");
+		}
+	}
 
-    public void unregisterCommand(BattleNightCommand command) {
-        CommandManager.unResgisterCommand(command);
-    }
+	public void unregisterCommand(BattleNightCommand command) {
+		CommandManager.unResgisterCommand(command);
+	}
 }

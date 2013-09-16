@@ -27,234 +27,240 @@ import org.bukkit.entity.Player;
 
 public abstract class SimpleBattle implements Battle {
 
-    public BattleNightAPI api;
+	public BattleNightAPI api;
 
-    private BattleTimer timer;
-    private int minPlayers;
-    private int maxPlayers;
+	private BattleTimer timer;
+	private int minPlayers;
+	private int maxPlayers;
 
-    private Arena arena;
-    protected boolean inProgress = false;
+	private Arena arena;
+	protected boolean inProgress = false;
 
-    private HashSet<String> players = new HashSet<String>();
+	private HashSet<String> players = new HashSet<String>();
 
-    public SimpleBattle(BattleNightAPI api, int duration, int minPlayers, int maxPlayers) {
-        this.api = api;
+	public SimpleBattle(BattleNightAPI api, int duration, int minPlayers, int maxPlayers) {
+		this.api = api;
 
-        timer = new BattleTimer(api, this, duration);
+		timer = new BattleTimer(api, this, duration);
 
-        this.minPlayers = minPlayers;
-        this.maxPlayers = maxPlayers;
-    }
+		this.minPlayers = minPlayers;
+		this.maxPlayers = maxPlayers;
+	}
 
-    @Override
-    public boolean addPlayer(Player player) {
-        getPlayers().add(player.getName());
+	@Override
+	public boolean addPlayer(Player player) {
+		getPlayers().add(player.getName());
 
-        if (!arena.getTexturePack().isEmpty()) {
-            player.setTexturePack(arena.getTexturePack());
-        }
-        return true;
-    }
+		if (!arena.getTexturePack().isEmpty()) {
+			player.setTexturePack(arena.getTexturePack());
+		}
+		return true;
+	}
 
-    @Override
-    public boolean containsPlayer(Player player) {
-        return getPlayers().contains(player.getName());
-    }
+	@Override
+	public boolean containsPlayer(Player player) {
+		return getPlayers().contains(player.getName());
+	}
 
-    @Override
-    public Arena getArena() {
-        return arena;
-    }
+	@Override
+	public Arena getArena() {
+		return arena;
+	}
 
-    @Override
-    public int getMaxPlayers() {
-        return maxPlayers;
-    }
+	@Override
+	public int getMaxPlayers() {
+		return maxPlayers;
+	}
 
-    @Override
-    public int getMinPlayers() {
-        return minPlayers;
-    }
+	@Override
+	public int getMinPlayers() {
+		return minPlayers;
+	}
 
-    /**
-     * @return the players
-     */
-    @Override
-    public Set<String> getPlayers() {
-        return players;
-    }
+	/**
+	 * @return the players
+	 */
+	@Override
+	public Set<String> getPlayers() {
+		return players;
+	}
 
-    @Override
-    public Timer getTimer() {
-        return timer;
-    }
+	@Override
+	public Timer getTimer() {
+		return timer;
+	}
 
-    /**
-     * @return if in progress
-     */
-    @Override
-    public boolean isInProgress() {
-        return inProgress;
-    }
+	/**
+	 * @return if in progress
+	 */
+	@Override
+	public boolean isInProgress() {
+		return inProgress;
+	}
 
-    @Override
-    public boolean removePlayer(Player player) {
-        if (!containsPlayer(player)) return false;
-        PlayerData.reset(player);
-        PlayerData.restore(player, true, false);
-        api.setPlayerClass(player, null);
-        getPlayers().remove(player.getName());
-        api.getScoreManager().removePlayer(player);
-        BattlePlayer.get(player.getName()).getStats().reset();
+	@Override
+	public boolean removePlayer(Player player) {
+		if (!containsPlayer(player))
+			return false;
+		PlayerData.reset(player);
+		PlayerData.restore(player, true, false);
+		api.setPlayerClass(player, null);
+		getPlayers().remove(player.getName());
+		api.getScoreManager().removePlayer(player);
+		BattlePlayer.get(player.getName()).getStats().reset();
 
-        if (shouldEnd()) {
-            stop();
-        }
-        return true;
-    }
+		if (shouldEnd()) {
+			stop();
+		}
+		return true;
+	}
 
-    @Override
-    public void respawn(Player player) {
-        if (!containsPlayer(player)) return;
+	@Override
+	public void respawn(Player player) {
+		if (!containsPlayer(player))
+			return;
 
-        api.getMessenger().debug(Level.INFO, "Respawning " + player.getName() + "...");
-        PlayerData.reset(player);
-        api.getPlayerClass(player).equip(player);
-        Teleporter.tp(player, getArena().getRandomSpawnPoint());
-    }
+		api.getMessenger().debug(Level.INFO, "Respawning " + player.getName() + "...");
+		PlayerData.reset(player);
+		api.getPlayerClass(player).equip(player);
+		Teleporter.tp(player, getArena().getRandomSpawnPoint());
+	}
 
-    @Override
-    public void setArena(Arena arena) {
-        if (isInProgress()) return;
-        this.arena = arena;
-    }
+	@Override
+	public void setArena(Arena arena) {
+		if (isInProgress())
+			return;
+		this.arena = arena;
+	}
 
-    @Override
-    public void setMaxPlayers(int maxPlayers) {
-        if (maxPlayers < getMinPlayers()) return;
-        this.maxPlayers = maxPlayers;
-    }
+	@Override
+	public void setMaxPlayers(int maxPlayers) {
+		if (maxPlayers < getMinPlayers())
+			return;
+		this.maxPlayers = maxPlayers;
+	}
 
-    @Override
-    public void setMinPlayers(int minPlayers) {
-        if (getMinPlayers() < 1) return;
-        this.minPlayers = minPlayers;
-    }
+	@Override
+	public void setMinPlayers(int minPlayers) {
+		if (getMinPlayers() < 1)
+			return;
+		this.minPlayers = minPlayers;
+	}
 
-    public boolean shouldEnd() {
-        return getPlayers().size() < minPlayers;
-    }
+	public boolean shouldEnd() {
+		return getPlayers().size() < minPlayers;
+	}
 
-    @Override
-    public boolean start() {
-        if (isInProgress()) return false;
+	@Override
+	public boolean start() {
+		if (isInProgress())
+			return false;
 
-        Messenger messenger = api.getMessenger();
+		Messenger messenger = api.getMessenger();
 
-        teleportAllToSpawn();
+		teleportAllToSpawn();
 
-        timer.start();
-        inProgress = true;
+		timer.start();
+		inProgress = true;
 
-        messenger.tellBattle(Message.BATTLE_STARTED);
+		messenger.tellBattle(Message.BATTLE_STARTED);
 
-        return true;
-    }
+		return true;
+	}
 
-    @Override
-    public boolean stop() {
-        if (timer.isRunning()) {
-            timer.stop();
-        }
+	@Override
+	public boolean stop() {
+		if (timer.isRunning()) {
+			timer.stop();
+		}
 
-        if (inProgress) {
-            api.getMessenger().tellBattle(getWinMessage());
-        }
+		if (inProgress) {
+			api.getMessenger().tellBattle(getWinMessage());
+		}
 
-        Iterator<String> pIt = getPlayers().iterator();
-        while (pIt.hasNext()) {
-            Player player = toPlayer(pIt.next());
-            if (player == null) {
-                pIt.remove();
-                continue;
-            }
+		Iterator<String> pIt = getPlayers().iterator();
+		while (pIt.hasNext()) {
+			Player player = toPlayer(pIt.next());
+			if (player == null) {
+				pIt.remove();
+				continue;
+			}
 
-            BattlePlayer bPlayer = BattlePlayer.get(player.getName());
-            bPlayer.revive();
-            bPlayer.getStats().reset();
+			BattlePlayer bPlayer = BattlePlayer.get(player.getName());
+			bPlayer.revive();
+			bPlayer.getStats().reset();
 
-            ((SimpleLobby) api.getLobby()).addPlayerFromBattle(player);
+			((SimpleLobby) api.getLobby()).addPlayerFromBattle(player);
 
-            pIt.remove();
-        }
+			pIt.remove();
+		}
 
-        api.getScoreManager().setState(ScoreboardState.VOTING);
+		api.getScoreManager().setState(ScoreboardState.VOTING);
 
-        arena = null;
-        inProgress = false;
-        return true;
-    }
+		arena = null;
+		inProgress = false;
+		return true;
+	}
 
-    protected String getWinMessage() {
-        String message;
+	protected String getWinMessage() {
+		String message;
 
-        List<String> leading = new ArrayList<String>();
-        int leadingScore = Integer.MIN_VALUE;
-        Map<String, BattlePlayer> bPlayers = BattlePlayer.getPlayers();
+		List<String> leading = new ArrayList<String>();
+		int leadingScore = Integer.MIN_VALUE;
+		Map<String, BattlePlayer> bPlayers = BattlePlayer.getPlayers();
 
-        for (String name : players) {
-            int score = bPlayers.get(name).getStats().getScore();
-            if (score < leadingScore) {
-                continue;
-            }
+		for (String name : players) {
+			int score = bPlayers.get(name).getStats().getScore();
+			if (score < leadingScore) {
+				continue;
+			}
 
-            if (score > leadingScore) {
-                leading.clear();
-                leadingScore = score;
-            }
-            leading.add(name);
-        }
+			if (score > leadingScore) {
+				leading.clear();
+				leadingScore = score;
+			}
+			leading.add(name);
+		}
 
-        if (leading.isEmpty()) {
-            message = Message.DRAW.getMessage();
-        } else if (leading.size() == 1) {
-            message = api.getMessenger().format(Message.PLAYER_WON, leading.get(0), leadingScore);
-        } else {
-            message = api.getMessenger().format(Message.PLAYER_WON, leading, leadingScore);
-        }
+		if (leading.isEmpty()) {
+			message = Message.DRAW.getMessage();
+		} else if (leading.size() == 1) {
+			message = api.getMessenger().format(Message.PLAYER_WON, leading.get(0), leadingScore);
+		} else {
+			message = api.getMessenger().format(Message.PLAYER_WON, leading, leadingScore);
+		}
 
-        return message;
-    }
+		return message;
+	}
 
-    /* ------ */
-    /* Events */
-    /* ------ */
+	/* ------ */
+	/* Events */
+	/* ------ */
 
-    protected void teleportAllToSpawn() {
-        ArrayList<Waypoint> waypoints = new ArrayList<Waypoint>(getArena().getSpawnPoints());
-        ArrayList<Waypoint> free = new ArrayList<Waypoint>(waypoints);
-        Random random = new Random();
+	protected void teleportAllToSpawn() {
+		ArrayList<Waypoint> waypoints = new ArrayList<Waypoint>(getArena().getSpawnPoints());
+		ArrayList<Waypoint> free = new ArrayList<Waypoint>(waypoints);
+		Random random = new Random();
 
-        for (String name : getPlayers()) {
-            Player player = toPlayer(name);
-            if (player == null || !player.isOnline()) {
-                continue;
-            }
+		for (String name : getPlayers()) {
+			Player player = toPlayer(name);
+			if (player == null || !player.isOnline()) {
+				continue;
+			}
 
-            if (free.size() <= 0) {
-                free = new ArrayList<Waypoint>(waypoints);
-            }
+			if (free.size() <= 0) {
+				free = new ArrayList<Waypoint>(waypoints);
+			}
 
-            int id = random.nextInt(free.size());
-            Teleporter.queue(player, free.get(id));
-            free.remove(id);
-        }
+			int id = random.nextInt(free.size());
+			Teleporter.queue(player, free.get(id));
+			free.remove(id);
+		}
 
-        Teleporter.startTeleporting();
-    }
+		Teleporter.startTeleporting();
+	}
 
-    protected Player toPlayer(String name) {
-        return Bukkit.getPlayerExact(name);
-    }
+	protected Player toPlayer(String name) {
+		return Bukkit.getPlayerExact(name);
+	}
 }
